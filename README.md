@@ -4,7 +4,9 @@
 
 Published at [javascript-basics.eregistrations.org](http://javascript-basics.eregistrations.org/?notes)
 
-Describes language fundamental rules, which are very important to understand for fluent work with eRegistrations framework
+Describes language fundamental rules, which are very important to understand and acknowledge for further fluent work with eRegistrations framework
+
+---
 
 Presentation was made with [Bespoke.js](https://github.com/markdalgleish/bespoke.js) presentation engine and following plugins: [history](https://github.com/medikoo/bespoke-history#bespoke-history), [keys](https://github.com/markdalgleish/bespoke-keys#bespoke-keys), [notes](https://github.com/medikoo/bespoke-notes#bespoke-notes), [progress](https://github.com/markdalgleish/bespoke-progress#bespoke-progress), [scale](https://github.com/markdalgleish/bespoke-scale#bespoke-scale), [substeps](https://github.com/medikoo/bespoke-substeps#bespoke-substeps), [sync](https://github.com/medikoo/bespoke-substeps#bespoke-sync), [touch](https://github.com/markdalgleish/bespoke-touch#bespoke-touch)
 
