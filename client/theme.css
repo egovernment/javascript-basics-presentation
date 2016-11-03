@@ -13,7 +13,7 @@ html {
 	top: 0;
 	align-items: stretch;
 	padding: 20px 40px;
-	/* border: 1px solid; */
+	border: 1px solid;
 }
 .bespoke-scale-parent {
 	/* Needed after above changes for FF */
@@ -231,9 +231,9 @@ div.log {
 div#cover h2 {
 	font-style: normal;
 	font-size: 60px;
-	text-align: right;
-	padding-right: 60px;
-	margin-bottom: 10px;
+	text-align: center;
+	margin-bottom: 20px;
+	padding: 0 50px;
 }
 div#cover div.links {
 	padding-left: 50%;
@@ -261,13 +261,11 @@ div#cover p.links + p img {
 }
 
 .logo {
-	position: relative;
+	text-align: center;
 }
 .logo img {
-	position: absolute;
-	bottom: 0;
 	right: 20px;
-	width: 260px;
+	width: 180px;
 }
 .logo-text {
 	visibility: hidden;
