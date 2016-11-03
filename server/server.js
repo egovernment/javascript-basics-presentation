@@ -74,5 +74,5 @@ module.exports = function (env) {
 	app.use(st({ path: staticsPath, cache: !env.dev, index: false, url: root }));
 	createServer(app).listen(port);
 
-	console.log("Server started");
+	console.log("Server started, open http://localhost:" + port + " in your browser");
 };
