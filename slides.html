@@ -70,13 +70,16 @@
 			<li>
 				<p>Deletion of a property is a way to expose <code>undefined</code></p>
 				<pre><code>delete obj.prop</code></pre>
+				<p>Note: <i>Deletion of <a href="https://github.com/medikoo/dbjs#dbjs">DBJS</a> object properties is achieved as</i></p>
+				<pre><code>obj.delete('prop')</code></pre>
 			</li>
 		</ul>
 	</div>
 	<aside>
 		<p>It's common that language needs some form to express "lack of value". In JavaScript there are two dedicated values for that. Why?</p>
 		<p class="substep" data-order="1">JavaScript (contrary to most of other languages) doesn't crash when you try to access non existent property, or doesn't provide arguments to function, in such case <code>undefined</code> is returned/passed to receiver</p>
-		<p class="substep" data-order="1">As there was a need to differentiate such cases from ones where we want to intentionally mark some property as having "no-value", an alternative <code>null</code> "no-value" was introduced</p>
+		<p class="substep" data-order="1">As there was a need to differentiate such cases from ones where we want to intentionally mark some property as having "no-value", an alternative <code>null</code> "no-value" was introduced.</p>
+		<p class="substep" data-order="1">Across eRegistrations where <a href="https://github.com/medikoo/dbjs#dbjs">DBJS</a> objects (users, business processes) are used, the deletion is achieved via <code>obj.delete('..')</code> method. It's dicated by fact, that deletion needs to trigger events that informs underlying mechanisms about that (so action can be reflected in persistent database), that would not be possible when using <code>delete</code> operator</p>
 	</aside>
 </section>
 
@@ -91,9 +94,9 @@
 		</ul>
 		<hr class="substep" data-order="2" />
 		<ul>
-			<li class="substep" data-order="2">Doesn't have properties or methods</li>
+			<li class="substep" data-order="2"><span class="substep" data-order="4" data-action="remove">Don't have properties or methods</span><span class="substep" data-order="4" data-action="insert"><s>Don't have properties or methods</s></span></li>
 			<li class="substep" data-order="3">Have alternative object representation</li>
-			<li class="substep" data-order="4">Prototype based via implied auto object-boxing</li>
+			<li class="substep" data-order="4">Via implied auto object-boxing:<br /><b>Have properties or methods</b></li>
 		</ul>
 	</div>
 	<aside>
@@ -151,125 +154,31 @@ extObject.foo; // 'bar'</code></pre>
 	</aside>
 </section>
 
-<section data-bespoke-id="value-type-detection">
-	<div class="content">
-		<h1>Value type detection</h1>
-		<h2 class="substep">Is one of non-values?</h2>
-		<pre class="substep" data-order="1"><code>var isNonValue = function (value) {
-  return value == null; // matches only `null` and `undefined`
-}</code></pre>
-		<h2 class="substep">Is object?</h2>
-		<pre class="substep" data-order="2"><code>var isObject = function (value) {
-  return (value !== null) &&
-    ((typeof value === 'object') ||
-      (typeof value === 'function'));
-}</code></pre>
-	</div>
-	<aside>
-		<p class="substep" data-order="1"><code>value == null</code> is the only exception when using <b>sloppy</b> equality operator could be recommended. This expression will match both <code>undefined</code> and <code>null</code></p>
-		<hr  class="substep" data-order="2" />
-		<p class="substep" data-order="2">As <code>typeof value === 'object'</code> matches also <code>null</code>, the check is preceded with confirmation that <code>value</code> is indeed not <code>null</code></p>
-		<hr  class="substep" data-order="2" />
-		<p class="substep" data-order="2">Usually those two checks are all we need, and we don't need third <code>isPrimitiveValue</code> util. All use cases go down to:</p>
-		<ul class="substep" data-order="2">
-			<li>Is a value (not a non-value)?</li>
-			<li>Is an object?</li>
-		</ul>
-	</aside>
-</section>
-
-<section data-bespoke-id="type-coercion" class="bespoke-slide-center">
-	<div class="content">
-		<h1>Type Coercion & Duck Typing</h1>
-		<hr />
-	</div>
-	<aside>
-		<p>JavaScript is a dynamic language where type coercion (in case of primitives) and duck typing (in case of objects) plays extensive role in internals handling</p>
-		<p>Altough that's often not reflected in user-land utilities and libraries, I believe that acknowledging those mechanisms is very important for fluent work with JavaScript</p>
-		<hr />
-		<p>In further part of presentation I'll focus on all coercion and duck-typing mechanisms implied natively</p>
-	</aside>
-</section>
-
 <section data-bespoke-id="boolean-coercion">
 	<div class="content">
-		<h1>Boolean (coercion)</h1>
-		<p class="substep" data-order="1"><b>Every</b> value is a boolean coercible</p>
-		<p class="substep" data-order="2">Values that coerce to <code>false</code> (falsy values):<br />
-			<b><code>false</code></b> (obviously), <b><code>undefined</code></b>, <b><code>null</code></b>, <b><code>""</code></b>, <b><code>0</code></b>, <b><code>NaN</code></b></p>
+		<h1>Boolean coercion</h1>
+		<p>Which <code>value</code>'s make below conditions follow <i>true</i> and which <i>false</i> route?</p>
+		<pre><code>if (value) { ... } else { ... }
+value ? .. : ...
+valueA && valueB
+valueA || valueB</code></pre>
+
+		<p class="substep" data-order="1">Which values coerce to <code>false</code> (which are "<b>Falsy Values</b>")?</p>
+		<p class="substep" data-order="2"><b><code>false</code></b> (obviously), <b><code>undefined</code></b>, <b><code>null</code></b>, <b><code>""</code></b>, <b><code>0</code></b>, <b><code>NaN</code></b></p>
 		<p class="substep"><i>Everything else coerces to <code>true</code></i></p>
-		<hr class="substep" data-order="3" />
-		<p class="substep" data-order="3">Simplified coercion algorithm:</p>
-		<pre class="substep" data-order="3"><code>function toBoolean(value) {
-  if (isNonValue(value)) return false;
-  if (value === false) return false;
-  if (value === "") return false;
-  if (value === 0) return false;
-  if (Number.isNaN(value)) return false;
-  return true;
-}</code></pre>
-		<p class="substep" data-order="3"><i>Also reflected by: <code>Boolean(value)</code></i></p>
 	</div>
 	<aside>
-		<p>Which values are coercible to booleans?</p>
-		<p class="substep" data-order="1">Which values coerce to <code>true</code> and which to <code>false</code>?</p>
-		<hr class="substep" data-order="2" />
-		<p class="substep" data-order="2">There is one additional "falsy value" exception in JavaScript ecosystem,  which I didn't mention on a slide, what is that?</p>
-		<p class="substep" data-order="2">It's infamous <code>document.all</code>. History of that goes to IE vs Netscape war era, when developers tend to detect whether they deal with IE by writing: <code>if (document.all)</code>.</p>
-		<p class="substep" data-order="2">When non IE browsers started to ship <code>document.all</code> it appeared that application scripts get into IE mode and crash.</p>
-		<p class="substep" data-order="2">This forced browser implementation authors to make an exception for <code>document.all</code>, they forced <code>typeof</code> to return <code>undefined</code> in its case, and made <code>document.all</code> one of falsy values</p>
-		<p class="substep" data-order="2">Still, for a long time since then usage of <code>document.all</code> is deprecated. You should <b>never</b> rely on that collection, and it's extremely unlikely you'll face it regular work.</p>
-		<p class="substep" data-order="2">Therefore I'd say it's totally safe to not be aware of it :)</p>
 	</aside>
 </section>
 
 <section data-bespoke-id="string-coercion">
 	<div class="content">
-		<h1>String (coercion)</h1>
-		<p class="substep"><b>Nearly every</b> value is a string coercible</p>
-		<p class="substep" data-order="1">Simplified coercion algorithm:</p>
-		<pre class="substep" data-order="1"><code>function toString(value) {
-  if (value === undefined) return 'undefined';
-  if (value === null) return 'null';
-  return value.toString();
-}</code></pre>
-		<p class="substep" data-order="1"><i>Also reflected by: <code>String(value)</code></i></p>
-		<p class="substep" data-order="2">No <code>toString</code> method (or malformed one) means <b>non-coercible</b></p>
-		<p class="substep" data-order="3">Valid example of non-coercible value:</p>
-		<pre class="substep" data-order="3"><code>var nonStringCoercible = Object.create(null);</code></pre>
+		<h1>String & Number coercion</h1>
+		<p class="substep"><b>(Nearly) Every value is a string and number coercible</b></p>
+		<p class="substep" data-order="2">On type mismatch, the engine proceeds with <b>value coercion</b></p>
 	</div>
 	<aside>
-		<p>Which values are coercible to strings?</p>
-		<p class="substep" data-order="3">Specification doesn't provide us with non-coercible values, still we're capable to create ones</p>
-	</aside>
-</section>
-
-<section data-bespoke-id="number-coercion">
-	<div class="content">
-		<h1>Number (coercion)</h1>
-		<p class="substep"><b>Nearly every</b> value is number coercible</p>
-		<p class="substep" data-order="1">Simplified internal coercion algorithm:</p>
-		<pre class="substep tight" data-order="1"><code>function toNumber(value) {
-  if (value === undefined) return NaN;
-  if (value === null) return 0;
-  if (typeof value === 'boolean') return value ? 1 : 0;
-  if (typeof value === 'string') return strToNumber(value);
-  if (typeof value === 'number') return value;
-  if (typeof value === 'symbol') <span class="code-error">throw new TypeError()</span>;
-  if (isObject(value.valueOf())) return strToNumber(value.toString());
-  return toNumber(value.valueOf());
-}</code></pre>
-		<p class="substep tight" data-order="1"><i>Also reflected by: <code>Number(value)</code></i></p>
-		<p class="substep tight" data-order="2">Non coercible values are:</p>
-		<ul class="substep tight" data-order="2">
-			<li><p><code>symbol</code>'s</p></li>
-			<li><p>with no <code>toString</code> and no primitive returning <code>valueOf</code> method</p></li>
-		</ul>
-	</div>
-	<aside>
-		<p>Which values are coercible to numbers?</p>
-		<p class="substep" data-order="2">Before ES2015 (and introduction of <code>Symbol</code>) specification didn't provide us with non-coercible values.</p>
-		<p class="substep" data-order="2">Still I'm not aware of reasons why comitee decided on such special treatment for symbols</p>
+		<p class="substep" data-order="2">Whenever a function, object method or language operator expects a number or string, but value of different type is provided, then engine doesn't crash but instead <b>proceeds with value coercion</b></p>
 	</aside>
 </section>
 
@@ -297,32 +206,6 @@ extObject.foo; // 'bar'</code></pre>
 	</aside>
 </section>
 
-<section data-bespoke-id="object-coercion">
-	<div class="content">
-		<h1>Object (coercion)</h1>
-		<p class="substep" data-order="1"><b>Nearly every</b> value is object coercible</p>
-		<p class="substep" data-order="1">Simplified internal coercion algorithm:</p>
-		<pre class="substep" data-order="1"><code>function toObject(value) {
-  if (isNonValue(value)) <span class="code-error">throw new TypeError()</span>;
-  if (typeof value === 'boolean') return new Boolean(value);
-  if (typeof value === 'string') return new String(value);
-  if (typeof value === 'number') return new Number(value);
-  if (typeof value === 'symbol') {
-    return createSymbolObject(value); // Internal
-  }
-  return value; // obviously an object already
-}</code></pre>
-		<p class="substep" data-order="1"><i>Nearly reflected by: <code>Object(value)</code></i></p>
-		<p class="substep">Non coercible are <code>null</code> and <code>undefined</code></p>
-	</div>
-	<aside>
-		<p>Which values are coercible to objects?</p>
-		<p class="substep" data-order="1">All but ones we categorized as <b>non-values</b></p>
-		<p class="substep" data-order="1">Interestingly while we're not allowed to create <i>object</i> representations of symbol's via <code>new Symbol()</code> construct, the internal <code>toObject</code> algorithm (accessible through <code>Object</code> constructor) is free of that restriction.</p>
-		<p class="substep" data-order="1">Important to note is that <code>Object(value)</code> constructor function, doesn't play 1:1 coercion role, as in case of non-value variants it will return us newly craeted objects.</p>
-	</aside>
-</section>
-
 <section data-bespoke-id="array-like-duck-typing">
 	<div class="content">
 		<h1>Array (duck typing)</h1>
@@ -345,148 +228,295 @@ Array.prototype.forEach.call(arrayLike, function (value) {
 	</aside>
 </section>
 
-<section data-bespoke-id="array-like-detection">
+<section data-bespoke-id="sets-and-maps">
 	<div class="content">
-		<h1>Array (duck typing)</h1>
-		<h2>How to state if value is array-like?</h2>
-		<p class="substep" data-order="1">Internally an <b>array-like</b> input and its <code>length</code> are coerced as:</p>
-		<pre class="substep" data-order="1"><code>function normalizeLength(v) {
-  if (isNaN(v) || (v < 0)) return 0;
-  if (v > Number.MAX_SAFE_INTEGER)) return Number.MAX_SAFE_INTEGER;
-  return Math.round(v);
+		<h1>Sets & Maps (iterators)</h1>
+		<p>Used extensively in <b>eRegistrations</b> stack</p>
+		<pre><code>var Set = require('es6-set');
+var Map = require('es6-map');
+
+var set = new Set(['raz', 2]);
+set.has('raz'); // true
+set.add('trzy');
+set.size; // 3
+
+var map = new Map([['a', 'foo'], ['b', 2]]);
+map.has('a'); // true
+map.set('b', 3);
+map.get('b'); // 3
+map.size; // 2</code></pre>
+		<p class="substep" data-order="2">Can be converted to array's via <code>Array.from</code></p>
+		<pre class="substep" data-order="2"><code>aFrom = require('es5-ext/array/from');
+aFrom(set); // ['raz', 2, 'trzy'];
+aFrom(map); // [['a', 'foo'], ['b', 3]];</code></pre>
+	</div>
+	<aside>
+		<p>In eRegistrations stack, you'll find extensive usage of new language collections: sets and maps</p>
+		<p>They do not share array-like contract, but newly introduced iterator/iterable contract</p>
+		<p>They're part of a new standard which is not yet supported in some browsers, therefore we rely
+ on polyfill</p>
+		<p class="substep" data-order="2">Same applies to <code>Array.from</code></p>
+	</aside>
+</section>
+
+<section data-bespoke-id="closures">
+	<div class="content">
+		<h1>Closures (Variables Visibility)</h1>
+		<h2>Variables are declared with <code>var</code> keyword</h2>
+		<p><b>Closure</b> means <b>Function Scope</b></p>
+		<pre><code>var outVar = 'foo';
+
+var aFn = function (aArg) {
+  var aVar = 'foo';
+
+  var bFn = function (bArg) {
+    var bVar = 'bar';
+    // Which vars ar visible in scope of bFn?
+  };
+
+  // Which vars ar visible in scope of aFn?
 };
-var arrayLike = toObject(value);
-var length = normalizeLength(toNumber(arrayLike.length));</pre></code>
-		<p class="substep" data-order="2">So in native implementation scope it's not much more than:</p>
-		<pre class="substep" data-order="2"><code>function isArrayLike(value) { return !isNonValue(value); }</pre></code>
-	</div>
-	<aside>
-		<p class="substep" data-order="2">Still in our API's for early error detection it's wise to also demand a <code>value.length</code> to be a valid (and within range) number</p>
-	</aside>
-</section>
 
-<section data-bespoke-id="iterable-iterator-duck-typing">
-	<div class="content">
-		<h1>Iterable & Iterator (duck typing)</h1>
-		<h2>New prototocols introduced with ES2015</h2>
-		<h3 class="substep" data-order="0.5">Iterable</h3>
-		<p class="substep" data-order="1">Any object exposing a <code>[Symbol.iterator]</code> method (which is expected to return an <b>iterator</b>) is accepted as <b>iterable</b></p>
-		<h3 class="substep" data-order="1.5">Iterator</h3>
-		<p class="substep" data-order="2">Any object exposing a <code>next</code> method (which is expected to return an object coercible value) is accepted as <b>iterator</b></p>
-		<pre class="substep" data-order="3"><code>var iterable = ['foo', 'bar'];
-var iterator = iterable[Symbol.iterator]();
-iterator.next(); // { done: false, value: 'foo' }
-iterator.next(); // { done: false, value: 'bar' }
-iterator.next(); // { done: true, value: undefined }</code></pre>
+aFn();
+// Which vars ar visible in outer scope?</code></pre>
 	</div>
 	<aside>
 	</aside>
 </section>
 
-<section data-bespoke-id="iterable-iterator-iteration">
+<section data-bespoke-id="this">
 	<div class="content">
-		<h1>Iterable & Iterator (duck typing)</h1>
-		<p><code>for..of</code> dedicated statement to iterate over iterators</p>
-		<pre><code>for (var value of iterable) { ... }</code></pre>
-		<hr class="substep" data-order="1" />
-		<p class="substep" data-order="1">With ES2015 all ES5 native array-like types:</p>
-		<p class="substep" data-order="1"><code>Array</code>, <code>String</code>, <code>arguments</code></p>
-		<p class="substep" data-order="1">Were upgraded to also share an <b>iterable</b> protocol</p>
-		<hr class="substep" data-order="2" />
-		<p class="substep" data-order="2">Some newly introduced ES2015+ (iterative) collection types:</p>
-		<p class="substep" data-order="2"><code>Set</code>, <code>Map</code></p>
-		<p class="substep" data-order="2">Were introduced purely as <b>iterables</b> (they're not <b>array-like</b>'s)</p>
+		<h1>"this"</h1>
+		<p>Decided <b>dynamically</b>, when function is called</p>
+		<p><b>How the function is called determines <code>this</code> value</b></p>
+		<hr />
+		<p><b>1. Default binding</b></p>
+		<pre><code>var fn = function () {
+  return this;
+};
+fn(); // undefined
+
+var obj = { method: fn };
+obj.method(); // obj</code></pre>
+		<p><b>2. Explicit binding</b></p>
+		<pre><code>fn.call(obj); // obj
+fn.apply(obj); // obj</code></pre>
 	</div>
 	<aside>
-		<p class="substep" data-order="1">It's important to note, that methods that take array-likes were not upgraded to support <code>iterables</code>, and that applies to also newly introduced methods as e.g. <code>find</code></p>
-		<p class="substep" data-order="1">Reason for that is probably slight incompatibility problem between two protocols</p>
-		<p class="substep" data-order="1">If we look closely, we'll see that array-like is actually a map of "index: value" pairs, while iterable is purely list of "value"'s</p>
-		<p class="substep" data-order="1">It's straightforward to present an <b>array-like</b> as a list of value's, but other way it can't be achieved cleanly</p>
-		<p class="substep" data-order="1">And of course methods that mute array-like, have no possiblity to work with iterables</p>
-		<p class="substep" data-order="2">Still, fact is that ES2015 comes with list taking methods/constructs, where one group works strictly with array-likes and other strictly with iterables. Those innconsistencies make adaptation of new protocols more confusing.</p>
 	</aside>
 </section>
 
-<section data-bespoke-id="array-from">
+<section data-bespoke-id="this-2">
 	<div class="content">
-		<h1>Array-Like & Iterable</h1>
-		<p>In API's we write we should support both <b>array-like</b>'s and <b>iterable</b>'s</p>
-		<p>How to achieve it cleanly?</p>
-		<p class="substep" data-order="1">Rely on <b><code>Array.from</code></b>:</p>
-		<pre class="substep" data-order="1"><code>var arrayLikeAndIterable = Array.from(arrayLikeOrIterable)</code></pre>
-		<p class="substep" data-order="2">Additionally we can <b>iterate</b> and <b>map</b> input <i>list</i> with <code>Array.from</code></p>
-		<pre class="substep" data-order="2"><code>var mappedInput = Array.from(input, function (value, index) {
-  // map value on spot
+		<h1>"this" (continued)</h1>
+		<p><b>3. Hard binding</b></p>
+		<pre><code>var boundFn = fn.bind(obj);
+boundFn(); // obj
+boundFn.call('foo'); // obj</code></pre>
+		<p><b>4. New (constructor) binding</b></p>
+		<pre><code>var newObj = new fn(); // new object (instance of fn)
+Object.getPrototypeOf(newObj); // fn.prototype</code></pre>
+	</div>
+	<aside>
+	</aside>
+</section>
+
+<section data-bespoke-id="inheritance">
+	<div class="content">
+		<h1>Prototypal Inheritance</h1>
+		<p>JavaScript does not have typical classes</p>
+		<p>Instead of object-class we have object-object inheritance</p>
+		<p>Prototype is determined at object construction</p>
+		<p><b>1. Default prototype binding (via <code>new</code>)</b></p>
+		<pre><code>var obj = new Object(); // Same as: obj = {}
+Object.getPrototypeOf(obj); // Object.prototype
+
+obj = new Array(); // Same as: obj = []
+Object.getPrototypeOf(obj); // Array.prototype
+
+obj = new SomeFunction();
+Object.getPrototypeOf(obj); // SomeFunction.prototype</code></pre>
+	</div>
+	<aside>
+	</aside>
+</section>
+
+<section data-bespoke-id="inheritance-2">
+	<div class="content">
+		<h1>Prototypal Inheritance (continued)</h1>
+		<p><b>2. Explicit prototype binding (via <code>Object.create</code>)</b></p>
+		<pre><code>obj = Object.create(Object.prototype); // Does not invoke constructor
+Object.getPrototypeOf(obj); // Object.prototype
+
+obj = Object.create(null); // Special case of prototype-less object
+Object.getPrototypeOf(obj); // null</pre></code>
+	</div>
+	<aside>
+	</aside>
+</section>
+
+<section data-bespoke-id="classes">
+	<div class="content">
+		<h1>Class-like handling</h1>
+		<pre><code>var Animal = function (dateOfBirth) {
+  this.dateOfBirth = dateOfBirth;
+};
+Animal.prototype = {
+  dateOfBirth: null,
+  say: function (what) { console.log(what); },
+  getAge: function () { return new Date() - this.dateOfBirth; }
+};
+
+var Dog = function (dateOfBirth, breed) {
+  Animal.call(this, dateOfBirth); // Call super
+  if (breed)  this.breed = breed;
+};
+Dog.prototype = Object.create(Animal.prototype);
+Dog.prototype.say = function () {
+  Animal.prototype.say.call(this, 'woof woof');
+};
+Dog.prototype.breed = 'mongrel';
+
+var sparky = new Dog(new Date('2008-02-23'), 'Terrier');</pre></code>
+	</div>
+	<aside>
+	</aside>
+</section>
+
+<section data-bespoke-id="classes-2">
+	<div class="content">
+		<h1>Class-like handling</h1>
+		<p><img src="/inheritance.png" width="550" /></p>
+	</div>
+	<aside>
+	</aside>
+</section>
+
+<section data-bespoke-id="async">
+	<div class="content">
+		<h1>Asynchronicity</h1>
+		<h2>Why asynchronous?</h2>
+		<p><b>To multitask efficiently</b></p>
+	</div>
+	<aside>
+	</aside>
+</section>
+
+<section data-bespoke-id="event-emitter">
+	<div class="content">
+		<h1>Common asynchronous interfaces</h1>
+		<h2>1. Event emitter</h2>
+		<p>To observe repetitive actions</p>
+		<p>(implementation of <b>observer pattern</b>)</p>
+		<pre><code>var changeListener = function () {
+  // change triggered
+};
+emitter.on('change', listener); // Register listener
+...
+emitter.emit('change'); // Emit event
+...
+emitter.off('change', listener); // Unregister listener</code></pre>
+	</div>
+	<aside>
+	</aside>
+</section>
+
+<section data-bespoke-id="node-callback">
+	<div class="content">
+		<h1>Common asynchronous interfaces</h1>
+		<h2>2. Node.js callbacks</h2>
+		<p>To handle singular asynchronous tasks</p>
+		<pre><code>asyncFunction(arg1, arg2, function (err, result) {
+    if (err) {
+      // Handle error
+      return;
+    }
+    // Process result
 });</code></pre>
 	</div>
 	<aside>
-		<p>Ideally "list" speaking we should rely just on iterables now but:<p>
-		<ul>
-			<li>We still need to deal with <code>array-like</code> based host API's (e.g. DOM) which didn't upgrade to iterable
-			<li>Same way in many user libraries we rely on, iterable protocol was not adopted</p>
-		</ul>
-		<p>That situation forces us now to deal with both kinds</p>
 	</aside>
 </section>
 
-<section data-bespoke-id="promise-duck-typing">
+<section data-bespoke-id="promises">
 	<div class="content">
-		<h1>Promise (duck typing)</h1>
-		<p class="substep" data-order="1">Any object exposing a <code>then</code> method is assumed to be a <b>promise</b></p>
-		<pre class="substep" data-order="1"><code>var promiseLike = {
-  then: function (onSuccess) {
-    onSuccess('foo');
-  }
-};
-var promise = new Promise(function (resolve) {
-  resolve(promiseLike);
-});
-promise.then(function (value) {
-  console.log(value); // 'foo'
+		<h1>Common asynchronous interfaces</h1>
+		<h2>3. Promises</h2>
+		<p>To handle singular asynchronous tasks</p>
+		<p><b>Highly composable</b></p>
+		<pre><code>promise.then(function (result) {
+  // Map result to other result
+}).done(function (result) {
+  // Process final result
+}, function (error) {
+  // Handle error
 });</code></pre>
-	<p class="substep" data-order="2">That way <i>native</i> promises are perfectly composable with ones created through user libraries (e.g. popular <a href="https://github.com/petkaantonov/bluebird">Bluebird</a>)</p>
 	</div>
 	<aside>
 	</aside>
 </section>
 
-<section data-bespoke-id="other-types">
+<section data-bespoke-id="modules">
 	<div class="content">
-		<h1>Other types</h1>
-		<p class="substep" data-order="1">(Internally) Recognized purely by <i>internal slots</i></p>
-		<p class="substep" data-order="1"><b>Can be created only through dedicated native constructors</b></p>
-		<p class="substep" data-order="2">We can't mimic them:</p>
-		<pre class="substep" data-order="2"><code>var dateLike = {
-  valueOf: function () { return 1475929220298; }
-};
-Date.prototype.getFullYear.call(dateLike); <span class="code-error">TypeError</span></pre></code>
-		<p class="substep" data-order="3">Starting from ES2015 there's a way obtain something close to <i>alike</i>:</p>
-		<pre class="substep" data-order="3"><code>var dateLike = Object.setPrototypeOf(new Date(1475929220298),
-  Object.prototype);
-dateLike.getFullYear; // undefined
-Date.prototype.getFullYear.call(dateLike); // 2016</pre></code>
-		<p class="substep" data-order="3">But it's not recommended practice, eventual use-cases are rare</p>
+		<h1>NCJS modules</h1>
+		<p>Embraced by <b>Node.js</b></p>
+		<p>Code organization format used across <b>eRegistrations</b> stack</p>
+		<h2>Module Export</h2>
+		<p><b>1. Dictionary of values</b></p>
+		<pre><code>exports.foo = fooValue;
+exports.bar = barValue;</code></pre>
+		<p><b>2. Singular value of any kind</b></p>
+		<pre><code>module.exports = exportedValue</code></pre>
+		<hr />
+		<pre><code>module.exports === exports; // true</code></pre>
 	</div>
 	<aside>
-		<p>In case of other types there's no duck-typing (at least on surface level) involved</p>
-		<p>How value detection works there?</p>
-		<p class="substep" data-order="3">Internally recognized purely by <i>internal slots</i> which are assigned to them through constructor based creation.</p>
-		<p class="substep" data-order="3">There's no way to create something that looks like e.g. <code>Date</code> or <code>Set</code> and will work with native <code>Date</code> or <code>Set</code> methods.</p>
 	</aside>
 </section>
 
-
-<section data-bespoke-id="callable">
+<section data-bespoke-id="modules-import-local">
 	<div class="content">
-		<h1>Callable (side case)</h1>
-		<p>Some browsers in its host API's exposed callable non <code>Function</code> based callable objects</p>
-		<p>e.g. in old version of Safari:</p>
-		<pre><code>typeof element.childNodes; // 'function'
-element.childNodes(1) === element.childNodes[1]</code></pre>
-		<p class="substep" data-order="1">In ES3 engines, things were even more rocky, e.g. in IE8:</p>
-		<pre class="substep" data-order="1"><code>typeof setTimeout; // 'object'</code></pre>
-		<hr class="substep" data-order="2" />
-		<p class="substep" data-order="2">Luckily, I'm not aware of on non <code>Function</code> based callable objects in latest versions of popular engines</p>
+		<h1>NCJS modules</h1>
+		<h2>Module Import</h2>
+		<p><b>1. Local import</b></p>
+		<p>Require path starts with <code>.</code> or <code>/</code></p>
+		<p>Resolution relative to directory of module</p>
+		<pre><code>var samePathModule = require('./module-in-same-path');
+var parentPathModule = require('../module-in-upper-path')</code></pre>
+	</div>
+	<aside>
+	</aside>
+</section>
+
+<section data-bespoke-id="modules-import-external">
+	<div class="content">
+		<h1>NCJS modules</h1>
+		<h2>Module Import</h2>
+		<p><b>2. External dependency import</b></p>
+		<p>Require path does not start with <code>.</code> or <code>/</code></p>
+		<p>Package is searched in <code>node_modules</code> folders (up to the root)</p>
+		<pre><code>var extModule = require('ext-dependency/foo');
+// search is made in:
+// ./node_modules/ext-dependency/foo
+// if not found then in:
+// ../node_modules/ext-dependency/foo
+// if not found then in:
+// ../../node_modules/ext-dependency/foo
+// etc.</code></pre>
+	</div>
+	<aside>
+	</aside>
+</section>
+
+<section data-bespoke-id="modules-import-directory">
+	<div class="content">
+		<h1>NCJS modules</h1>
+		<h2>Module Import</h2>
+		<p><b>3. Directory import</b></p>
+		<p>When require path points to a directory, resolution goes as:</p>
+		<p>- If there's a directory local <code>package.json</code> file with defined <code>main</code> field, then value of that field is assumed as target path<p>
+		<p>otherwise</p>
+		<p>- Directory local <code>index.js</code> is assumed as target path</p>
 	</div>
 	<aside>
 	</aside>
@@ -496,12 +526,7 @@ element.childNodes(1) === element.childNodes[1]</code></pre>
 	<div class="content">
 		<h1 class="h0">Thank you!</h1>
 		<h2>Mariusz Nowak</h2>
-		<p class="links">
-			<a href="https://twitter.com/medikoo"><img src="/twitter.png" width="50" /> @medikoo</a>
-		</p>
-		<p class="links">
-			<a href="https://github.com/medikoo"><img src="/github.png" width="50" /> github.com/medikoo</a>
-		</p>
+		<p class="logo"><img src="/unctad.png" width="50" /></p>
 	</div>
 	<aside></aside>
 </section>
