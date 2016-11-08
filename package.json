@@ -1,12 +1,12 @@
 {
   "private": true,
-  "name": "javascript-basics",
+  "name": "javascript-basics-presentation",
   "version": "1.0.0",
-  "description": "JavaScript Basics (An introductin for eRegistrations developers)",
+  "description": "(Presentation) JavaScript Basics, An introduction for eRegistrations developers",
   "author": "Mariusz Nowak <medyk@medikoo.com> (http://www.medikoo.com/)",
   "repository": {
     "type": "git",
-    "url": "git://github.com/egovernment/javascript-basics.git"
+    "url": "git://github.com/egovernment/javascript-basics-presentation.git"
   },
   "dependencies": {
     "autoprefixer": "^6.5",
