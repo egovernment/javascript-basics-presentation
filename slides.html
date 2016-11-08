@@ -160,7 +160,7 @@ extObject.foo; // 'bar'</code></pre>
 		<p>Which <code>value</code>'s make below conditions follow <i>true</i> and which <i>false</i> route?</p>
 		<pre><code>if (value) { ... } else { ... }
 value ? .. : ...
-valueA && valueB
+valueA &amp;&amp; valueB
 valueA || valueB</code></pre>
 
 		<p class="substep" data-order="1">Which values coerce to <code>false</code> (which are "<b>Falsy Values</b>")?</p>
@@ -173,7 +173,7 @@ valueA || valueB</code></pre>
 
 <section data-bespoke-id="string-coercion">
 	<div class="content">
-		<h1>String & Number coercion</h1>
+		<h1>String &amp; Number coercion</h1>
 		<p class="substep"><b>(Nearly) Every value is a string and number coercible</b></p>
 		<p class="substep" data-order="2">On type mismatch, the engine proceeds with <b>value coercion</b></p>
 	</div>
@@ -184,7 +184,7 @@ valueA || valueB</code></pre>
 
 <section data-bespoke-id="operators">
 	<div class="content">
-		<h1>Operators & Implicit Coercion</h1>
+		<h1>Operators &amp; Implicit Coercion</h1>
 		<p class="substep" data-order="1">Computation based operators are meant <b>strictly</b> for primitive <b>booleans</b>, <b>strings</b> or <b>numbers</b></p>
 		<p class="substep" data-order="1">On operand type mismatch <b>coercion</b> occurs</p>
 		<table class="operands-table substep" data-order="1">
@@ -193,7 +193,7 @@ valueA || valueB</code></pre>
 			</thead>
 			<tbody>
 				<tr><td><code>!</code></td><td>toBoolean</td><td>boolean</td></tr>
-				<tr><td><code>&&</code>, <code>||</code>, <code>?:</code></td><td>toBoolean</td><td><i>one of operands</i></td></tr>
+				<tr><td><code>&amp;&amp;</code>, <code>||</code>, <code>?:</code></td><td>toBoolean</td><td><i>one of operands</i></td></tr>
 				<tr><td><code>++</code>, <code>--</code>, <code>+</code> (unary), <code>-</code> (unary), <code>-</code>, <code>~</code>, <code>/</code>, <code>*</code>, <code>%</code>, <code>**</code>, <code>&lt;&lt;</code>, <code>&gt;&gt;</code>, <code>&lt;&lt;&lt;</code>, <code>&gt;&gt;&gt;</code>, <code>&amp;</code>, <code>|</code>, <code>^</code>, <code>*=</code>, <code>**=</code>, <code>/=</code>, <code>%=</code>, <code>-=</code>, <code>&lt;&lt;=</code>, <code>&gt;&gt;=</code>, <code>&lt;&lt;&lt;=</code>, <code>&gt;&gt;&gt;=</code>, <code>&amp;=</code>, <code>^=</code>, <code>|=</code></td><td>toNumber</td><td>number</td></tr>
 				<tr><td><code>+=</code>, <code>+</code></td><td>toString or toNumber</td><td>string or number</td></tr>
 				<tr><td><code>&lt;</code>, <code>&lt;=</code>, <code>&gt;</code>, <code>&gt;=</code></td><td>toString or toNumber</td><td>boolean</td></tr>
@@ -230,7 +230,7 @@ Array.prototype.forEach.call(arrayLike, function (value) {
 
 <section data-bespoke-id="sets-and-maps">
 	<div class="content">
-		<h1>Sets & Maps (iterators)</h1>
+		<h1>Sets &amp; Maps (iterators)</h1>
 		<p>Used extensively in <b>eRegistrations</b> stack</p>
 		<pre><code>var Set = require('es6-set');
 var Map = require('es6-map');
