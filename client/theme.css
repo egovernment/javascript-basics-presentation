@@ -13,7 +13,7 @@ html {
 	top: 0;
 	align-items: stretch;
 	padding: 20px 40px;
-	border: 1px solid;
+	/* border: 1px solid; */
 }
 .bespoke-scale-parent {
 	/* Needed after above changes for FF */
