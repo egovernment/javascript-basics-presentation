@@ -232,7 +232,7 @@ Array.prototype.forEach.call(arrayLike, function (value) {
 	<div class="content">
 		<h1>Sets &amp; Maps (iterators)</h1>
 		<p>Used extensively in <b>eRegistrations</b> stack</p>
-		<pre><code>var Set = require('es6-set');
+		<pre class="substep"><code>var Set = require('es6-set');
 var Map = require('es6-map');
 
 var set = new Set(['raz', 2]);
@@ -294,13 +294,13 @@ aFn();
 		<pre><code>var fn = function () {
   return this;
 };
-fn(); // undefined
+fn(); <span  class="substep" data-order="1">// undefined</span>
 
-var obj = { method: fn };
-obj.method(); // obj</code></pre>
-		<p><b>2. Explicit binding</b></p>
-		<pre><code>fn.call(obj); // obj
-fn.apply(obj); // obj</code></pre>
+<span  class="substep" data-order="2">var obj = { method: fn };
+obj.method(); <span  class="substep" data-order="3">// obj</span></span></code></pre>
+		<p class="substep" data-order="4"><b>2. Explicit binding</b></p>
+		<pre class="substep" data-order="4"><code>fn.call(obj); <span  class="substep" data-order="5">// obj</span>
+fn.apply(obj); <span  class="substep" data-order="5">// obj</span></code></pre>
 	</div>
 	<aside>
 	</aside>
@@ -311,11 +311,11 @@ fn.apply(obj); // obj</code></pre>
 		<h1>"this" (continued)</h1>
 		<p><b>3. Hard binding</b></p>
 		<pre><code>var boundFn = fn.bind(obj);
-boundFn(); // obj
-boundFn.call('foo'); // obj</code></pre>
-		<p><b>4. New (constructor) binding</b></p>
-		<pre><code>var newObj = new fn(); // new object (instance of fn)
-Object.getPrototypeOf(newObj); // fn.prototype</code></pre>
+boundFn(); <span  class="substep" data-order="1">// obj</span>
+<span  class="substep" data-order="2">boundFn.call('foo'); <span  class="substep" data-order="3">// obj</span></span></code></pre>
+		<p class="substep" data-order="4"><b>4. New (constructor) binding</b></p>
+		<pre class="substep" data-order="4"><code>var newObj = new fn(); <span class="substep" data-order="5">// new object (instance of fn)</span>
+Object.getPrototypeOf(newObj);  <span class="substep" data-order="5">// fn.prototype</span></code></pre>
 	</div>
 	<aside>
 	</aside>
@@ -329,13 +329,13 @@ Object.getPrototypeOf(newObj); // fn.prototype</code></pre>
 		<p>Prototype is determined at object construction</p>
 		<p><b>1. Default prototype binding (via <code>new</code>)</b></p>
 		<pre><code>var obj = new Object(); // Same as: obj = {}
-Object.getPrototypeOf(obj); // Object.prototype
+Object.getPrototypeOf(obj);  <span class="substep" data-order="1">// Object.prototype</span>
 
-obj = new Array(); // Same as: obj = []
-Object.getPrototypeOf(obj); // Array.prototype
+<span class="substep" data-order="2">obj = new Array(); // Same as: obj = []
+Object.getPrototypeOf(obj);  <span class="substep" data-order="3">// Array.prototype</span></span>
 
-obj = new SomeFunction();
-Object.getPrototypeOf(obj); // SomeFunction.prototype</code></pre>
+<span class="substep" data-order="4">obj = new SomeFunction();
+Object.getPrototypeOf(obj);  <span class="substep" data-order="5">// SomeFunction.prototype</span></span></code></pre>
 	</div>
 	<aside>
 	</aside>
@@ -346,10 +346,10 @@ Object.getPrototypeOf(obj); // SomeFunction.prototype</code></pre>
 		<h1>Prototypal Inheritance (continued)</h1>
 		<p><b>2. Explicit prototype binding (via <code>Object.create</code>)</b></p>
 		<pre><code>obj = Object.create(Object.prototype); // Does not invoke constructor
-Object.getPrototypeOf(obj); // Object.prototype
+Object.getPrototypeOf(obj); <span class="substep" data-order="1">// Object.prototype</span>
 
-obj = Object.create(null); // Special case of prototype-less object
-Object.getPrototypeOf(obj); // null</pre></code>
+<span class="substep" data-order="2">obj = Object.create(null); // Special case of prototype-less object
+Object.getPrototypeOf(obj); <span class="substep" data-order="3">// null</span></span></pre></code>
 	</div>
 	<aside>
 	</aside>
@@ -367,7 +367,7 @@ Animal.prototype = {
   getAge: function () { return new Date() - this.dateOfBirth; }
 };
 
-var Dog = function (dateOfBirth, breed) {
+<span class="substep" data-order="1">var Dog = function (dateOfBirth, breed) {
   Animal.call(this, dateOfBirth); // Call super
   if (breed)  this.breed = breed;
 };
@@ -375,9 +375,9 @@ Dog.prototype = Object.create(Animal.prototype);
 Dog.prototype.say = function () {
   Animal.prototype.say.call(this, 'woof woof');
 };
-Dog.prototype.breed = 'mongrel';
+Dog.prototype.breed = 'mongrel';</span>
 
-var sparky = new Dog(new Date('2008-02-23'), 'Terrier');</pre></code>
+<span class="substep" data-order="2">var sparky = new Dog(new Date('2008-02-23'), 'Terrier');</span></pre></code>
 	</div>
 	<aside>
 	</aside>
@@ -396,7 +396,7 @@ var sparky = new Dog(new Date('2008-02-23'), 'Terrier');</pre></code>
 	<div class="content">
 		<h1>Asynchronicity</h1>
 		<h2>Why asynchronous?</h2>
-		<p><b>To multitask efficiently</b></p>
+		<p class="substep"><b>To multitask efficiently</b></p>
 	</div>
 	<aside>
 	</aside>
