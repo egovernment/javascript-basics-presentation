@@ -41,6 +41,7 @@
 			<li><b><code>null</code></b></li>
 		</ul>
 		<hr class="substep" data-order="2" />
+
 		<ul>
 			<li class="substep" data-order="2">Don't have properties or methods</li>
 			<li class="substep">No alternative object representation</li>
@@ -154,13 +155,29 @@ extObject.foo; // 'bar'</code></pre>
 	</aside>
 </section>
 
+<section data-bespoke-id="type-coercion" class="bespoke-slide-center">
+	<div class="content">
+		<h1>Type Coercion &amp; Duck Typing</h1>
+		<hr />
+	</div>
+	<aside>
+		<p>JavaScript is a dynamic language where type coercion (in case of primitives) and duck typing (in case of objects) plays extensive role in internals handling</p>
+		<p>Altough that's often not reflected in user-land utilities and libraries, I believe that acknowledging those mechanisms is very important for fluent work with JavaScript</p>
+		<hr />
+		<p>Now I'll focus on some coercion and duck-typing mechanisms implied natively</p>
+	</aside>
+</section>
+
 <section data-bespoke-id="boolean-coercion">
 	<div class="content">
 		<h1>Boolean coercion</h1>
 		<p>Which <code>value</code>'s make below conditions follow <i>true</i> and which <i>false</i> route?</p>
 		<pre><code>if (value) { ... } else { ... }
+
 value ? .. : ...
+
 valueA &amp;&amp; valueB
+
 valueA || valueB</code></pre>
 
 		<p class="substep" data-order="1">Which values coerce to <code>false</code> (which are "<b>Falsy Values</b>")?</p>
@@ -299,8 +316,8 @@ fn(); <span  class="substep" data-order="1">// undefined</span>
 <span  class="substep" data-order="2">var obj = { method: fn };
 obj.method(); <span  class="substep" data-order="3">// obj</span></span></code></pre>
 		<p class="substep" data-order="4"><b>2. Explicit binding</b></p>
-		<pre class="substep" data-order="4"><code>fn.call(obj); <span  class="substep" data-order="5">// obj</span>
-fn.apply(obj); <span  class="substep" data-order="5">// obj</span></code></pre>
+		<pre class="substep" data-order="4"><code>fn.call(obj, arg1, arg2); <span  class="substep" data-order="5">// obj</span>
+fn.apply(obj, [arg1, arg2]); <span  class="substep" data-order="5">// obj</span></code></pre>
 	</div>
 	<aside>
 	</aside>
